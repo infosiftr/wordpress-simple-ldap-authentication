@@ -36,9 +36,12 @@ table.equivalent-table {
 	background-color: #eaeaea;
 }
 
+input[type="text"] {
+	width: 100%;
+}
+
 input[type="text"][readonly] {
 	background-color: #eaeaea;
-	width: 100%;
 }
 
 input[type="button"][disabled],
