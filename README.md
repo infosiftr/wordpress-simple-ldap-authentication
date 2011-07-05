@@ -1,13 +1,13 @@
 # Simple LDAP Authentication
 ## Original Description
 
-> This plugin allows WordPress to authenticate users against an LDAP. To tell the truth, this is a hard modified version of [http://wordpress.org/extend/plugins/active-directory-authentication/](Active Directory Authentication) plugin.
+From http://wordpress.org/extend/plugins/simple-ldap-authentication/:
+
+> This plugin allows WordPress to authenticate users against an LDAP. To tell the truth, this is a hard modified version of [Active Directory Authentication](http://wordpress.org/extend/plugins/active-directory-authentication/) plugin.
 >
-> Active Directory Authentication plugin and it's back-end ([http://adldap.sourceforge.net/](adLDAP)) require AD domain, in contrast, this plugin only needs LDAP server.
+> Active Directory Authentication plugin and it's back-end ([adLDAP](http://adldap.sourceforge.net/)) require AD domain, in contrast, this plugin only needs LDAP server.
 >
 > It is very easy to set up. Just activate the plugin, type in a LDAP server, and you're done.
-
-- http://wordpress.org/extend/plugins/simple-ldap-authentication/
 
 ## Enhancements
 
