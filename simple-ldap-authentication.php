@@ -34,7 +34,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		function LdapAuthenticationPlugin() {
 			if ( isset($_GET['activate']) && $_GET['activate'] == 'true' )
 				add_action('init', array(&$this, 'initialize_options'));
-			add_action('admin_menu', array(&$this, 'add_options_page'));
+			add_action('network_admin_menu', array(&$this, 'add_options_page'));
 			add_action('wp_authenticate', array(&$this, 'authenticate'), 10, 2);
 			add_filter('check_password', array(&$this, 'override_password_check'), 10, 4);
 			add_action('lost_password', array(&$this, 'disable_function'));
@@ -58,17 +58,17 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 */
 		function initialize_options() {
 			if ( current_user_can('manage_options') ) {
-				add_option('LDAP_authentication_auto_create_user', false, 'Should a new user be created automatically if not already in the WordPress database?');
-				add_option('LDAP_authentication_use_ssl', false, 'Use SSL Connection');
-				add_option('LDAP_authentication_server', '', 'LDAP Server');
-				add_option('LDAP_authentication_base_dn', '', 'Base DN');
-				add_option('LDAP_authentication_role_equivalent_groups', '', 'Role Equivalent Groups');
-				add_option('LDAP_authentication_default_email_domain', '', 'Default Email Domain');
-				add_option('LDAP_authentication_bind_dn', '', 'Bind DN');
-				add_option('LDAP_authentication_bind_password', '', 'Bind Password');
-				add_option('LDAP_authentication_uid_filter', '(uid=%user_id%)', 'LDAP uid search filter');
-				add_option('LDAP_authentication_group_filter', '(cn=%group%)', 'LDAP group search filter');
-				add_option('LDAP_authentication_group_attribute', 'memberuid', 'LDAP group attribute');
+				add_site_option('LDAP_authentication_auto_create_user', false, 'Should a new user be created automatically if not already in the WordPress database?');
+				add_site_option('LDAP_authentication_use_ssl', false, 'Use SSL Connection');
+				add_site_option('LDAP_authentication_server', '', 'LDAP Server');
+				add_site_option('LDAP_authentication_base_dn', '', 'Base DN');
+				add_site_option('LDAP_authentication_role_equivalent_groups', '', 'Role Equivalent Groups');
+				add_site_option('LDAP_authentication_default_email_domain', '', 'Default Email Domain');
+				add_site_option('LDAP_authentication_bind_dn', '', 'Bind DN');
+				add_site_option('LDAP_authentication_bind_password', '', 'Bind Password');
+				add_site_option('LDAP_authentication_uid_filter', '(uid=%user_id%)', 'LDAP uid search filter');
+				add_site_option('LDAP_authentication_group_filter', '(cn=%group%)', 'LDAP group search filter');
+				add_site_option('LDAP_authentication_group_attribute', 'memberuid', 'LDAP group attribute');
 			}
 		}
 
@@ -76,8 +76,9 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Add an options pane for this plugin.
 		 */
 		function add_options_page() {
-			if ( function_exists('add_options_page') ) {
-				$page = add_options_page(__('Simple LDAP Authentication', $this->ldap_auth_domain), __('Simple LDAP Authentication', $this->ldap_auth_domain), 9, $this->ldap_auth_domain, array(&$this, '_display_options_page'));
+			if ( function_exists('add_submenu_page') ) {
+				add_submenu_page('settings.php', 'Simple LDAP Authentication', 'Simple LDAP Authentication', 'manage_options', 'simple_ldap_authentication', array(&$this, '_display_options_page'));
+//				$page = add_submenu_page(__('Simple LDAP Authentication', $this->ldap_auth_domain), __('Simple LDAP Authentication', $this->ldap_auth_domain), 9, $this->ldap_auth_domain, array(&$this, '_display_options_page'));
 				add_action("admin_print_styles-$page", array(&$this, 'add_admin_custom_css'));
 				add_action("admin_print_scripts-$page", array(&$this, 'add_admin_script'));
 			}
@@ -85,13 +86,13 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 
 		function authenticate( $username, $password ) {
 			$this->authenticated = false;
-			$use_ssl = (bool) get_option('LDAP_authentication_use_ssl');
-			$ldap_server = get_option('LDAP_authentication_server');
-			$use_ssl = get_option('LDAP_authentication_use_ssl');
-			$base_dn = get_option('LDAP_authentication_base_dn');
-			$bind_dn = get_option('LDAP_authentication_bind_dn');
-			$bind_password = get_option('LDAP_authentication_bind_password');
-			$uid_filter = get_option('LDAP_authentication_uid_filter');
+			$use_ssl = (bool) get_site_option('LDAP_authentication_use_ssl');
+			$ldap_server = get_site_option('LDAP_authentication_server');
+			$use_ssl = get_site_option('LDAP_authentication_use_ssl');
+			$base_dn = get_site_option('LDAP_authentication_base_dn');
+			$bind_dn = get_site_option('LDAP_authentication_bind_dn');
+			$bind_password = get_site_option('LDAP_authentication_bind_password');
+			$uid_filter = get_site_option('LDAP_authentication_uid_filter');
 			$replace_count = 0;
 			$uid_filter = str_replace('%user_id%', $username, $uid_filter, &$replace_count);
 			if ( $replace_count == 0 ) {
@@ -177,7 +178,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 			$user = get_userdatabylogin($username);
 			if ( !$user or $user->user_login != $username ) {
 				$user_role = $this->_get_user_role_equiv($ldap, $username);
-				if ( (bool) get_option('LDAP_authentication_auto_create_user' )
+				if ( (bool) get_site_option('LDAP_authentication_auto_create_user' )
 						|| $user_role != '' ) {
 					$sn_lang = 'sn;lang-' . WPLANG;
 					$gn_lang = 'givenname;lang-' . WPLANG;
@@ -260,7 +261,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Add custom style sheet to the admin page
 		 */
 		function add_admin_custom_css() {
-			$style = WP_PLUGIN_URL . '/' . dirname(plugin_basename(__FILE__)) . '/extra-table.css';
+			$style = WPMU_PLUGIN_URL . '/' . dirname(plugin_basename(__FILE__)) . '/extra-table.css';
 			wp_register_style('ldap-auth-extra', $style, array('colors'));
 			wp_enqueue_style('ldap-auth-extra');
 		}
@@ -269,7 +270,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Add custom script to the admin page
 		 */
 		function add_admin_script() {
-			$script = WP_PLUGIN_URL . '/' . dirname(plugin_basename(__FILE__)) . '/extra-table.js';
+			$script = WPMU_PLUGIN_URL . '/' . dirname(plugin_basename(__FILE__)) . '/extra-table.js';
 			wp_register_script('ldap-auth-extra', $script, array('jquery-ui-dialog'));
 			wp_enqueue_script('ldap-auth-extra');
 		}
@@ -282,9 +283,9 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Check the group includes the target user.
 		 */
 		function _user_in_group( $ldap, $username, $group ) {
-			$base_dn = get_option('LDAP_authentication_base_dn');
-			$group_filter = get_option('LDAP_authentication_group_filter');
-			$group_attr = strtolower(get_option('LDAP_authentication_group_attribute'));
+			$base_dn = get_site_option('LDAP_authentication_base_dn');
+			$group_filter = get_site_option('LDAP_authentication_group_filter');
+			$group_attr = strtolower(get_site_option('LDAP_authentication_group_attribute'));
 			$replace_count = 0;
 			$group_filter = str_replace('%group%', $group, $group_filter, &$replace_count);
 			if ( $replace_count == 0 ) {
@@ -308,7 +309,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Get the user's group info from LDAP and return the WordPress role.
 		 */
 		function _get_user_role_equiv( $ldap, $username ) {
-			$role_equiv_groups = get_option('LDAP_authentication_role_equivalent_groups');
+			$role_equiv_groups = get_site_option('LDAP_authentication_role_equivalent_groups');
 			$role_equiv_groups = explode(';', $role_equiv_groups);
 			$user_role = '';
 			foreach ( $role_equiv_groups as $role_group ) {
@@ -341,7 +342,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 */
 		function _create_user( $username, $email, $first_name, $last_name, $role = '' ) {
 			$password = $this->_get_password();
-			$email_domain = get_option('LDAP_authentication_default_email_domain');
+			$email_domain = get_site_option('LDAP_authentication_default_email_domain');
 			
 			if ( $email == '' ) 
 				$email = $username . '@' . $email_domain;
@@ -354,8 +355,16 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 			} else {
 				update_usermeta($user_id, 'first_name', $first_name);
 				update_usermeta($user_id, 'last_name', $last_name);
-				if ( $role != '' ) 
-					wp_update_user(array('ID' => $user_id, 'role' => $role));
+				if ( $role != '' ) {
+					if (trim(strtolower($role)) == 'super admin') {
+						require_once ABSPATH . 'wp-admin/includes/ms.php';
+						wp_update_user(array('ID' => $user_id, 'user_level' => 10, 'role' => 'administrator'));
+						grant_super_admin($user_id);
+					}
+					else {
+						wp_update_user(array('ID' => $user_id, 'role' => $role));
+					}
+				}
 			}
 		}
 
@@ -365,7 +374,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		function _reset_options() {
 			$all_options = array_filter(array_keys((array)get_alloptions()), create_function('$target', 'return ereg("^LDAP_authentication_", $target);'));
 			foreach ( $all_options as $option ) {
-				delete_option($option);
+				delete_site_option($option);
 			}
 			$this->initialize_options();
 ?>
@@ -379,23 +388,33 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		function _display_options_page() {
 			if ( isset($_POST['reset_options']) )
 				$this->_reset_options();
-			$ldap_server = get_option('LDAP_authentication_server');
-			$use_ssl = get_option('LDAP_authentication_use_ssl');
-			$base_dn = get_option('LDAP_authentication_base_dn');
-			$role_equiv_groups = get_option('LDAP_authentication_role_equivalent_groups');
-			$auto_create_user = (bool) get_option('LDAP_authentication_auto_create_user');
-			$email_domain = get_option('LDAP_authentication_default_email_domain');
-			$bind_dn = get_option('LDAP_authentication_bind_dn');
-			$bind_password = get_option('LDAP_authentication_bind_password');
-			$uid_filter = get_option('LDAP_authentication_uid_filter');
-			$group_filter = get_option('LDAP_authentication_group_filter');
-			$group_attr = get_option('LDAP_authentication_group_attribute');
+			
+			if (isset($_POST['page_options'])) {
+				$fields = explode(',', $_POST['page_options']);
+				foreach ($fields as $field) {
+					if (isset($_POST[$field])) {
+						add_site_option($field, $_POST[$field]);
+					}
+				}
+			}
+			
+			$ldap_server = get_site_option('LDAP_authentication_server');
+			$use_ssl = get_site_option('LDAP_authentication_use_ssl');
+			$base_dn = get_site_option('LDAP_authentication_base_dn');
+			$role_equiv_groups = get_site_option('LDAP_authentication_role_equivalent_groups');
+			$auto_create_user = (bool) get_site_option('LDAP_authentication_auto_create_user');
+			$email_domain = get_site_option('LDAP_authentication_default_email_domain');
+			$bind_dn = get_site_option('LDAP_authentication_bind_dn');
+			$bind_password = get_site_option('LDAP_authentication_bind_password');
+			$uid_filter = get_site_option('LDAP_authentication_uid_filter');
+			$group_filter = get_site_option('LDAP_authentication_group_filter');
+			$group_attr = get_site_option('LDAP_authentication_group_attribute');
 ?>
 
 
 <div class="wrap">
 	<h2><?php _e('Simple LDAP Authentication Options', $this->ldap_auth_domain); ?></h2>
-	<form action="options.php" method="post">
+	<form method="post">
 		<input type="hidden" name="action" value="update" />
 		<input type="hidden" name="page_options" value="LDAP_authentication_auto_create_user,LDAP_authentication_base_dn,LDAP_authentication_server,LDAP_authentication_use_ssl,LDAP_authentication_role_equivalent_groups,LDAP_authentication_default_email_domain,LDAP_authentication_bind_dn,LDAP_authentication_bind_password,LDAP_authentication_uid_filter,LDAP_authentication_group_filter,LDAP_authentication_group_attribute" />
 		<?php if (function_exists('wp_nonce_field')): wp_nonce_field('update-options'); endif; ?>
@@ -492,7 +511,7 @@ ALSO NOTE: LDAP groups are case-sensitive', $this->ldap_auth_domain); ?>
 				</td>
 			</tr>
 		</table>
-		<input type="hidden" name="default_role" id="default_role" value="<?php echo get_option('default_role'); ?>" />
+		<input type="hidden" name="default_role" id="default_role" value="<?php echo get_site_option('default_role'); ?>" />
 		<p class="submit">
 			<input type="submit" name="Submit" value="<?php _e('Save Changes'); ?>" />
 		</p>
@@ -540,4 +559,3 @@ ALSO NOTE: LDAP groups are case-sensitive', $this->ldap_auth_domain); ?>
 
 // Load the plugin hooks, etc.
 $Ldap_authentication_plugin = new LdapAuthenticationPlugin();
-?>
