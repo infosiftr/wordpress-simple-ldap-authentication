@@ -35,17 +35,23 @@
 			this.update_table();
 			$('#equivalent_dialog').show();
 			var width = $('.equivalent-table :text').width() + $('.equivalent-table select').width() + ($('.equivalent-table :button').width() + 50) * 4;
+			width = this.target.outerWidth(true);
 			this.tr_height = $('.equivalent-table tbody tr').height();
-			var height = $('#equivalent_dialog').height() + 60;
+			var offset = $('#LDAP_authentication_role_equivalent_groups').offset();
 			$('#equivalent_dialog').dialog({
 				autoOpen: false,
 				minWidth: width,
-				width: width,
-				minHeight: height,
-				height: height,
+				width: this.target.outerWidth(true),
 				modal: true,
-				/*buttons: { 'OK': function() { $(this).dialog('close'); } },*/
-				close: function(event, ui) { wpLdapAuthRoleEquiv.update_equiv(); $('#LDAP_authentication_role_equivalent_groups').removeAttr('readonly'); }
+				draggable: false,
+				buttons: { 'close': function() { $(this).dialog('close'); } },
+				open: function (event, ui) {
+					$(this).parent('.ui-dialog').offset(offset);
+				},
+				close: function (event, ui) {
+					wpLdapAuthRoleEquiv.update_equiv();
+					$('#LDAP_authentication_role_equivalent_groups').removeAttr('readonly');
+				}
 			}).removeAttr('title');
 			this.target.focus(function() {
 				$(this).attr('readonly', 'readonly');

@@ -76,10 +76,10 @@ input[type="button"][disabled]:active {
 	width: 17px;
 	height: 17px;
 	background: url(../../../wp-admin/images/marker.png) no-repeat;
-	position:absolute;
+	position: absolute;
 	top: 8px;
 	right: 8px;
-	cursor: default;
+	cursor: pointer;
 }
 
 .ui-dialog .ui-dialog-titlebar-close span {
@@ -103,17 +103,22 @@ input[type="button"][disabled]:active {
 }
 
 .ui-dialog .ui-dialog-content {
-	margin: 1.2em;
+	padding: 1.2em;
 }
 
 .ui-dialog .ui-dialog-buttonpane {
-	position: absolute;
-	bottom: 8px;
-	right: 12px;
 	width: 100%;
-	text-align: right;
 }
 
-.ui-dialog .ui-dialog-buttonpane button {
-	margin: 6px;
+.ui-widget-overlay {
+	z-index: 999990 !important;
+	background-color: #000;
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0.75;
+}
+
+.ui-dialog {
+	z-index: 999991 !important;
 }

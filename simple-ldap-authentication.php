@@ -365,7 +365,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 				update_usermeta($user_id, 'first_name', $first_name);
 				update_usermeta($user_id, 'last_name', $last_name);
 				if ( $role != '' ) {
-					if (trim(strtolower($role)) == 'super admin') {
+					if (is_multisite() && trim(strtolower($role)) == 'super admin') {
 						require_once ABSPATH . 'wp-admin/includes/ms.php';
 						wp_update_user(array('ID' => $user_id, 'user_level' => 10, 'role' => 'administrator'));
 						grant_super_admin($user_id);
@@ -547,7 +547,12 @@ ALSO NOTE: LDAP groups are case-sensitive', $this->ldap_auth_domain); ?>
 					<input type="text" />
 				</td>
 				<td>
-					<select><?php wp_dropdown_roles(); ?></select>
+					<select><?php wp_dropdown_roles(); // wp_dropdown_roles does stupid things with whitespace ?>
+
+<?php if (is_multisite()): ?>
+						<option value="super admin">Super Admin (Network Admin)</option>
+<?php endif; ?>
+					</select>
 				</td>
 				<td>
 					<span class="submit">
