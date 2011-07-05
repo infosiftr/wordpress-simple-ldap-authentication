@@ -35,7 +35,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 			if ( isset($_GET['activate']) && $_GET['activate'] == 'true' )
 				add_action('init', array(&$this, 'initialize_options'));
 			add_action('network_admin_menu', array(&$this, 'add_options_page'));
-			add_action('wp_authenticate', array(&$this, 'authenticate'), 10, 2);
+			add_filter('authenticate', array(&$this, 'authenticate'), 10, 3);
 			add_filter('check_password', array(&$this, 'override_password_check'), 10, 4);
 			add_action('lost_password', array(&$this, 'disable_function'));
 			add_action('retrieve_password', array(&$this, 'disable_function'));
@@ -84,7 +84,11 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 			}
 		}
 
-		function authenticate( $username, $password ) {
+		function authenticate( $user, $username, $password ) {
+			if (is_a($user, 'WP_User')) {
+				return $user;
+			}
+			
 			$this->authenticated = false;
 			$use_ssl = (bool) get_site_option('LDAP_authentication_use_ssl');
 			$ldap_server = get_site_option('LDAP_authentication_server');
@@ -205,6 +209,12 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 			}
 			
 			@ldap_unbind($ldap);
+			
+			if ($this->authenticated && ($userdata = get_user_by('login', $username))) {
+				return new WP_User($userdata->ID);
+			}
+			
+			return false;
 		}
 
 		/*
