@@ -520,7 +520,7 @@ ALSO NOTE: LDAP groups are case-sensitive', $this->ldap_auth_domain); ?>
 				</td>
 			</tr>
 		</table>
-		<input type="hidden" name="default_role" id="default_role" value="<?php echo get_site_option('default_role'); ?>" />
+		<input type="hidden" name="default_role" id="default_role" value="subscriber" />
 		<p class="submit">
 			<input type="submit" name="Submit" value="<?php _e('Save Changes'); ?>" />
 		</p>
