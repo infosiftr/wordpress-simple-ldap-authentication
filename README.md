@@ -11,6 +11,6 @@ From <http://wordpress.org/extend/plugins/simple-ldap-authentication/>:
 
 ## Enhancements
 
-Modified to work in a "MU" environment instead.  Eventually plan to add conditionals so that it works in a single site install again, but for now it's only tested in a multi-site environment.
+Modified to properly work in a multi-site install as well as a single-site install.  Eventually may add support for site-specific user specification, but that would be a long ways down the road, especially since we don't currently need it.  Suggestions/patches welcome. ;)
 
 Also, it has been modified to properly support XMLRPC authentication without requiring any hacks to Wordpress itself (upgrading use of the `wp_authenticate` action to use the `authenticate` filter instead).
