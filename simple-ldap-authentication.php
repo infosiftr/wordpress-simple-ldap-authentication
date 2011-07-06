@@ -32,9 +32,11 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		var $ldap_auth_domain = 'ldap-auth';
 		
 		function LdapAuthenticationPlugin() {
-			if ( isset($_GET['activate']) && $_GET['activate'] == 'true' )
+			if (isset($_GET['activate']) && $_GET['activate'] == 'true') {
 				add_action('init', array(&$this, 'initialize_options'));
-			add_action('network_admin_menu', array(&$this, 'add_options_page'));
+			}
+			
+			add_action(is_multisite() ? 'network_admin_menu' : 'admin_menu', array(&$this, 'add_options_page'));
 			add_filter('authenticate', array(&$this, 'authenticate'), 10, 3);
 			add_filter('check_password', array(&$this, 'override_password_check'), 10, 4);
 			add_action('lost_password', array(&$this, 'disable_function'));
@@ -57,7 +59,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Add options for this plugin to the database.
 		 */
 		function initialize_options() {
-			if ( current_user_can('manage_options') ) {
+			if (current_user_can('manage_options')) {
 				add_site_option('LDAP_authentication_auto_create_user', false, 'Should a new user be created automatically if not already in the WordPress database?');
 				add_site_option('LDAP_authentication_use_ssl', false, 'Use SSL Connection');
 				add_site_option('LDAP_authentication_server', '', 'LDAP Server');
@@ -76,7 +78,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Add an options pane for this plugin.
 		 */
 		function add_options_page() {
-			if ( function_exists('add_submenu_page') ) {
+			if (function_exists('add_submenu_page')) {
 				$page = add_submenu_page('settings.php', 'Simple LDAP Authentication', 'Simple LDAP Authentication', 'manage_options', 'simple_ldap_authentication', array(&$this, '_display_options_page'));
 				add_action("admin_print_styles-$page", array(&$this, 'add_admin_custom_css'));
 				add_action("admin_print_scripts-$page", array(&$this, 'add_admin_script'));
