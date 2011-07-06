@@ -78,8 +78,18 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Add an options pane for this plugin.
 		 */
 		function add_options_page() {
-			if (function_exists('add_submenu_page')) {
-				$page = add_submenu_page('settings.php', 'Simple LDAP Authentication', 'Simple LDAP Authentication', 'manage_options', 'simple_ldap_authentication', array(&$this, '_display_options_page'));
+			$page = false;
+			
+			if (is_multisite()) {
+				if (function_exists('add_submenu_page')) {
+					$page = add_submenu_page('settings.php', 'Simple LDAP Authentication', 'Simple LDAP Authentication', 'manage_options', 'simple_ldap_authentication', array(&$this, '_display_options_page'));
+				}
+			}
+			elseif (function_exists('add_options_page')) {
+				$page = add_options_page(__('Simple LDAP Authentication', $this->ldap_auth_domain), __('Simple LDAP Authentication', $this->ldap_auth_domain), 9, $this->ldap_auth_domain, array(&$this, '_display_options_page'));
+			}
+			
+			if ($page) {
 				add_action("admin_print_styles-$page", array(&$this, 'add_admin_custom_css'));
 				add_action("admin_print_scripts-$page", array(&$this, 'add_admin_script'));
 			}
