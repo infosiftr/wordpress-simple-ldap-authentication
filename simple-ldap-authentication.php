@@ -162,7 +162,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 				trigger_error('Searching with \'' . $uid_filter . '\' filter.');
 				$result = ldap_search($ldap, $base_dn, $uid_filter, array('dn'));
 			}
-			if ( !$result ) return false;
+			if ( !$result ) return $user;
 			if ( !defined('WP_DEBUG') || ( defined('WP_DEBUG') && false === WP_DEBUG ) )
 				$ldap_user = @ldap_get_entries($ldap, $result);
 			else
@@ -173,7 +173,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 				if ( defined('WP_DEBUG') && ( true === WP_DEBUG ) )
 					trigger_error('Can\'t find user \'' . $username . '\' in LDAP.');
 				@ldap_unbind($ldap);
-				return false;
+				return $user;
 			}
 			
 			if ( !defined('WP_DEBUG') || ( defined('WP_DEBUG') && false === WP_DEBUG ) ) {
@@ -188,7 +188,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 				if ( defined('WP_DEBUG') && ( true === WP_DEBUG ) )
 					trigger_error('Re-bind failed');
 				@ldap_unbind($ldap);
-				return false;
+				return $user;
 			}
 			
 			// Create new users automatically, if configured
@@ -224,10 +224,10 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 			@ldap_unbind($ldap);
 			
 			if ($this->authenticated && ($userdata = get_user_by('login', $username))) {
-				return new WP_User($userdata->ID);
+				$user = new WP_User($userdata->ID);
 			}
 			
-			return false;
+			return $user;
 		}
 
 		/*
