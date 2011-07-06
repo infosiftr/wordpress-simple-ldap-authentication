@@ -284,7 +284,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Add custom style sheet to the admin page
 		 */
 		function add_admin_custom_css() {
-			$style = WPMU_PLUGIN_URL . '/' . dirname(plugin_basename(__FILE__)) . '/extra-table.css';
+			$style = (is_multisite() ? WPMU_PLUGIN_URL : WP_PLUGIN_URL) . '/' . dirname(plugin_basename(__FILE__)) . '/extra-table.css';
 			wp_register_style('ldap-auth-extra', $style, array('colors'));
 			wp_enqueue_style('ldap-auth-extra');
 		}
@@ -293,7 +293,7 @@ if ( !class_exists('LdapAuthenticationPlugin') ) {
 		 * Add custom script to the admin page
 		 */
 		function add_admin_script() {
-			$script = WPMU_PLUGIN_URL . '/' . dirname(plugin_basename(__FILE__)) . '/extra-table.js';
+			$script = (is_multisite() ? WPMU_PLUGIN_URL : WP_PLUGIN_URL) . '/' . dirname(plugin_basename(__FILE__)) . '/extra-table.js';
 			wp_register_script('ldap-auth-extra', $script, array('jquery-ui-dialog'));
 			wp_enqueue_script('ldap-auth-extra');
 		}
