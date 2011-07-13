@@ -17,6 +17,6 @@ Also, it has been modified to properly support XMLRPC authentication without req
 
 ## Install
 
-For single-site installs, just `git clone` into the `wp-content/plugins` directory, then enter the administration dashboard to enable (example: `mkdir -p wp-content/plugins && cd wp-content/plugins && git clone git://github.com/infosiftr/simple-ldap-authentication.git`).
+For single-site installs, just `git clone` into the `wp-content/plugins` directory, then enter the administration dashboard to enable (example: `mkdir -p wp-content/plugins && cd wp-content/plugins && git clone git://github.com/infosiftr/wordpress-simple-ldap-authentication.git simple-ldap-authentication`).
 
-For multi-site installs, `git clone` into the `wp-content/mu-plugins` directory (create if necessary), and then symlink the php file up a level (example: `mkdir -p wp-content/mu-plugins && cd wp-content/mu-plugins && git clone git://github.com/infosiftr/simple-ldap-authentication.git && ln -s simple-ldap-authentication/simple-ldap-authentication.php .`).
+For multi-site installs, `git clone` into the `wp-content/mu-plugins` directory (create if necessary), and then symlink the php file up a level (example: `mkdir -p wp-content/mu-plugins && cd wp-content/mu-plugins && git clone git://github.com/infosiftr/wordpress-simple-ldap-authentication.git simple-ldap-authentication && ln -s simple-ldap-authentication/simple-ldap-authentication.php .`).
