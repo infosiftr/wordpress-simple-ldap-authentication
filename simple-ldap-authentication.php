@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Simple LDAP Authentication
-Version: 1.0.4
-Plugin URI: http://redgecko.jp/wp/ldap_auth/
-Description: Allows WordPress to authenticate users through LDAP
-Author: RedGecko
-Author URI: http://redgecko.jp/
+Version: 2.0
+Plugin URI: https://github.com/infosiftr/wordpress-simple-ldap-authentication
+Description: Allows WordPress (and MU) to Authenticate Users Using LDAP
+Author: InfoSiftr (based on the work of RedGecko)
+Author URI: http://infosiftr.com
 */
 
 /*	Copyright 2009 Yoshimitsu Mori (email : redgecko@redgecko.jp)
